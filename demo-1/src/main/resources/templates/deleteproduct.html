@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Delete Product</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+</head>
+<body>
+
+<div class="container mt-5">
+    
+    <div class="card" style="max-width: 500px; margin: auto;">
+        
+        <div class="card-header bg-danger text-white">
+            <h3 class="mb-0">Delete Product</h3>
+        </div>
+        
+        <div class="card-body">
+            
+            <form th:action="@{/deleteproduct}" method="post">
+                
+                <div class="form-group">
+                    <label><b>Enter Product ID to Delete:</b></label>
+                    <input type="number" name="id" class="form-control" placeholder="e.g. 101" required>
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-danger">Permanently Delete</button>
+                    
+                    <a th:href="@{/viewallproduct}" class="btn btn-secondary ml-2">Cancel / Back</a>
+                </div>
+                
+            </form>
+            
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
