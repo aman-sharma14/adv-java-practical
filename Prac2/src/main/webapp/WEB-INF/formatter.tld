@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib>
+	
+	<tlibversion>1.0</tlibversion>
+	<jspversion>1.1</jspversion>
+	<shortname>formatter</shortname>
+	<uri>formatter</uri>
+	
+	<tag>
+		<name>formatter</name>
+		<tagclass>
+			com.Formatter
+		</tagclass>
+		<attribute>
+			<name>input</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+
+</taglib>

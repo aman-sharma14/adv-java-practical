@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+</head>
+<body>
+	<div class="container">
+		
+		<table class="table table-hover table-striped">
+			<thead class="thead-dark">
+				<tr>
+					<th>Id</th>
+					<th>Name</th>
+					<th>Gender</th>
+					<th>Stream</th>
+					
+				</tr>
+			</thead>
+			
+			<tbody>
+				<tr th:each="s : ${allStudents}">
+				
+					<td th:text="${s.uid}"></td>
+					<td th:text="${s.name}"></td>
+					<td th:text="${s.gender}"></td>
+					<td th:text="${s.stream}"></td>
+					
+					<td>
+						<a th:href="@{/updateStudentForm/{id}(id=${s.uid})}" class="btn btn-warning btn-sm">Edit </a>
+						<a th:href="@{/deleteStudentById/{id}(id=${s.uid})}" class="btn btn-danger btn-sm">Delete</a>
+					</td>
+				
+				</tr>
+			</tbody>
+		</table>
+		
+		<a th:href="@{/addstudent}" class="btn btn-primary">
+		Add Student
+		</a>
+	
+	</div>
+</body>
+</html>
