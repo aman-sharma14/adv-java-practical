@@ -1,0 +1,137 @@
+Spring boot -
+    Framework designed to simplify development of standalone applications, built on spring
+    eliminates manual configurations req by traditional spring projects
+    sensible defaults are applied automatically
+    can embed webservers(apache tomcat) directly into applications
+    
+    @SpringBootApplication
+
+Spring Security
+    an open-source Java framework that provides comprehensive authentication, authorization, 
+    and protection against common security threats for applications built on the Spring Framework.
+
+    protects against Brute force attacks
+
+
+JPA (Java Persistence API) - 
+
+    specification(interface standart) for managing relational data
+    Hibernate is one of the implementations of JPA
+
+    does - 
+        maps java objects to DB tables
+        manages entity lifecycle
+        handles CRUD
+
+    public interface MovieRepository extends JpaRepository<Movie, Long>
+    Spring auto-generates:
+        save()
+        findById()
+        deleteById()
+        findAll()
+    No manual SQL needed
+
+
+Hibernate
+    open-source object-relational mapping (ORM) framework for Java.
+    maps Java classes to relational database tables, automating data persistence and retrieval so developers can focus on application logic instead of SQL.
+
+    eliminates boilerplate JDBC code by translating object operations into SQL automatically
+    
+    JDBC:
+        Manual SQL
+        Manual mapping
+        More boilerplate
+
+    Hibernate:
+        Auto table mapping
+        HQL support
+        Less code
+        Caching
+
+    eg - 
+    @Entity
+    public class UserCredential
+
+    @Id
+    @GeneratedValue
+    @Column
+    @OneToMany
+    @ManyToOne
+
+
+JPA is just a specification that defines how ORM should work, 
+while Hibernate is an implementation of that specification that actually performs database operations.
+
+
+MicroServices - 
+    Monolithic -> one large application
+    MicroServices -> small independent services communicating via REST APIs
+
+    Improve scalability, Fault isolation, independent deployment and technology flexibility
+
+    Discovery (Netflix Eureka) - 
+        Service Registry developed by netflix
+        dynamic service discovery, load balancing
+
+        Eureka server - 
+            central registry
+            maintains meta data about running service instances
+
+        other services register with eureka
+
+        eg, API gateway asks eureka - where is identity service running?
+    
+    API Gateway (Spring Cloud gateway) - 
+        Single entry point for client reqs to multiple backend services
+        evaluates incoming reqs, applies filters (to modify req or resp)
+        then forwards reqs to appropriate service
+
+        frontend calls only gateway
+        gateway-
+            routes reqs
+            validates jwt
+            filters
+
+
+DI (Dependency Injection) - 
+    The Spring container creates and manages objects instead of you creating them manually.
+
+    eg.
+    instead of >> MovieService service = new MovieService();
+    we do >> 
+        @Autowired
+        private MovieService movieService;
+
+    part of Inversion of COntrol (control of object creation given to spring container)
+
+    benefits :
+        loose coupling (classes have minimal dependencies , interacting through interfaces)
+        easier to test and maintain
+
+
+
+
+
+
+Scehdular
+    import org.springframework.boot.CommandLineRunner;
+
+    @Component
+    public class MovieScheduler implements CommandLineRunner {
+        This class runs automatically once when the Spring Boot application starts.
+
+    used to:
+        ✔ Check if movie table is empty
+        ✔ Load default movie data
+        ✔ Prevent duplicate data loading
+
+    @Autowired-
+        Spring injects MovieService automatically.
+
+    This is not actual cron schedular
+
+Cron Schedular - 
+    @Scheduled(cron = "0 0 12 * * ?")
+        public void cleanData() {
+    }
