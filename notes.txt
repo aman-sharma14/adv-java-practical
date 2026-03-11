@@ -457,4 +457,340 @@ Filters -
 Custom tags - 
     User-defined tags that extend the standard set of JSP tags to perform specialized tasks.
     Created as a tag library, which is a collection of custom tags
-    Encourages reusability and 
+    Encourages reusability and separates business logic from presentation
+
+    Simple -
+        basic tag that performs fixed action without any input
+        consists of start tag and self-closing end tag
+        no body or atrribute within tag
+        eg - <prefix.tagName />
+            tag lib prefix, tag name
+        
+        used for static tasks like displaying current date
+
+    Tag with Attributes - 
+        Accepts input parameters from the JSP page to customize its behavior
+        Attributes are defined in the tag handler class with corresponding setter methods
+        eg - <prefix:tagName attribute="value" />
+            <my:greet user="John" />
+    
+    Tag with body - 
+        Contains nested content (HTML or JSP elements) between the start and end tags
+        The tag can process, modify, or ignore the content inside its body
+        eg - 
+        <my:formatBold> This text will be bolded by the tag logic. </my:formatBold>
+
+
+JDBC - 
+    Java Database Connectivity
+    java API providing standard interface for connecting Java apps to relation DBs (Mysql, Oracle, PostgreSql)
+
+    Type 1 : JDBC-ODBC bridge driver
+        java app -> jdbc api -> odbc driver -> DB
+        slowest , deprecated
+
+    Type 2 : Native API (Partly java driver)
+        java app -> JDBC api -> Native DB library -> DB
+        Faster than type 1, but OS-dependent
+
+    type 3 : Network Protocol Driver (middleware)
+        java app -> jdbc api -> middleware server -> DB
+        DB-independent , but needs middleware
+    
+    type 4 : Native Protocol driver (thin driver)
+        java app -> jdbc api -> direct DB (tcp/ip)
+        fastest, production grade
+
+    Type 1 (JDBC-ODBC bridge driver)
+        converts JDBC calls into ODBC calls 
+        uses ODBC driver installed on client machine
+
+        diagram - 
+        Java App ---------> JDBC Type 1 driver ---------------> ODBC Driver ------------> DB (e.g MS access)
+                 jdbc calls                     odbc calls                    db protocol
+
+        adv - 
+            easy to use (built into JDK)
+            supports any ODBC enabled DB
+            good for dev/testing
+        disadv - 
+            slowest of all drivers
+            requires odbc on client
+            not good for production
+
+    Type 4 (Native Protocol driver)
+        thin driver
+        converts JDBC calls into DB specific protocols
+        communicates directly over network without any middleware
+        java app -> jdbc driver (100% java) -> direct DB (tcp/ip)
+
+        diagram (1st)
+
+        adv - 
+            fastest
+            platform independent
+            direct socket connection to DB
+            no native library installation required
+            simple setup - just add JAR file to classpath
+        
+        Code (normal JDBC connection code)
+        
+
+
+    Type 3 vs Type 4-
+        also called Middleware driver
+            thin driver
+        java app -> jdbc api -> middleware server -> DB
+            java app -> jdbc api -> direct DB (tcp/ip)
+        Middleware server required
+            not required as direct connection
+        database independent
+            specific to one DB
+        moderate speed
+            fastest (as no middleware)
+        used for Multi-DB apps
+            used for single-DB apps
+        eg - IDS server
+            eg - MySql connector
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+18) Explain how a custom tag with attribute is created in JSP with java coiding.
+
+
+1) Difference between JSP and servlet.
+    JSP is a server-side technology 
+    used to create dynamic, platform-independent web pages
+    embeda Java code into HTML using special tags
+
+    Problems with Servlets (Why we need JSP)
+        Code Clutter: Contains request processing, business logic, and UI (response generation) in one file.
+        High Learning Curve: Requires deep Java knowledge to develop and maintain.
+        Rigid UI: Changing the "look and feel" requires modifying and recompiling Java code.
+        Tool Incompatibility: Standard web design tools (Dreamweaver, etc.) cannot easily edit Java files.
+        Developer Overhead: Involves writing massive amounts of println statements for HTML.
+        Maintenance: Any change or new addition often requires a server restart.
+
+    Advantages of JSP
+        Separation of Concerns: * Logic: Handled by Java/JSP elements.
+        Presentation: Static HTML remains as-is.
+        Role Division: Allows Java programmers to focus on logic while Web authors focus on UI
+        Flexibility: Can change the presentation layer without affecting the business layer (and vice versa).
+        Efficiency: More convenient to write regular HTML than using out.println() for every tag.
+
+    eg - 
+    <%@ page language="java" import=“java.util.*” %>    ---- JSP tag
+    <head><title>Date Example</title></head>
+    <html>
+        <body>
+            <%
+            Date d=new Date();
+            String today = DateFormat.getInstance().format(d);
+            %>
+            
+            Today is:
+            <h1><%=today%></h1>
+        </body>
+    </html>
+
+
+2) Explain life cycle of JSP
+JSP Life Cycle
+    The sequence of steps a JSP page goes through from the moment it is first requested until it is destroyed
+    Managed by: The JSP/Servlet Container (e.g., Tomcat)
+
+    life cycle first diagram
+
+    1 Translation & compilation-
+        happens only during the very first request for a specific JSP page
+        Translation: 
+            JSP engine parses .jsp file for syntactical correctness 
+            converts it into a Servlet source file (.java)
+            It skips JSP comments and brings in any included files, scriplets etc into the _jspService method
+        compilation: 
+            source file compiled into servlet class file using standard javac compiler
+        
+    2 Loading & initialization -
+        container loads compiled class file into memory
+        instance of this servlet is created
+        Initialization: 
+            container calls jspInit() once to initialize variables and resources=[s]
+            ServletConfig and ServletContext objects become available during this step
+
+    3 Request Processing (Execution)
+        _jspService Method:
+            heart of JSP life cycle
+            equivalent to the service() method in standard servlets.
+            called for every single request
+            takes HttpServletRequest and HttpServletResponse as parameters
+            Note: This method cannot be overridden within a JSP page
+
+    4 Cleanup & Destruction
+        jspDestroy Method:
+            container calls it before the JSP instance is taken out of service
+            guaranteed to be the last method called
+            Used to release resources acquired in jspInit() (e.g., closing database connections)
+
+
+
+3) what are the implicit objects in JSP
+    Variables that can be used in a JSP page without being declared first.
+    These objects are made available to the page by the _jspService method
+
+    request:
+        HttpServletRequest associated with the current request
+        Allows to view request parameters (via getParameter), request types (GET, POST), and HTTP headers (cookies, etc.).
+
+    response:
+        HttpServletResponse associated with the client response
+        output stream for this object is buffered
+
+    out:
+        buffered version of PrintWriter called JspWriter
+        Used to send output directly to the client
+    
+    session:
+        HttpSession object associated with the request
+        This variable is bound even if there was no incoming session reference, as sessions are created automatically.
+
+    page:
+        Acts as a synonym for 'this' in Java.
+        serves as a placeholder for potential future scripting languages other than Java.
+
+
+4) Discuss any 5 JSP elements with examples
+    building blocks used to insert Java code or perform specific actions within a JSP page.
+
+    1. JSP Expressions
+        Evaluates a Java expression and inserts the resulting string directly into the output.
+        Syntax: <%= expression %>.
+        Example:
+        Today is: <%= new java.util.Date() %>
+
+    2. JSP Scriptlets
+        Allows you to insert snippets of Java code into the servlet's _jspService method.
+        Syntax: <% code %>.
+        Example:
+        <% if (Math.random() < 0.5) { 
+            out.print("Have a nice day!"); 
+        } %>
+        (Used for local logic like conditional statements) .
+
+    3. JSP Declarations
+        to declare methods or global variables that are placed outside the service method in the servlet class.
+        Syntax: <%! code %>.
+        Example:
+        <%! int count = 0; %>
+        (This creates a global variable count available to the entire class) .
+
+    4. Page Directive
+        Defines page-specific attributes such as language, imported classes, or error handling.
+        Syntax: <%@ page attribute="value" %>.
+        Example:
+        <%@ page language="java" import="java.util.*"%>
+
+    5. Standard Actions (e.g., Forward)
+        Performs dynamic actions at runtime, such as shifting the request to another page.
+        Syntax: <jsp:forward page="URL" />.
+        Example:
+        <jsp:forward page="./login.html" />
+
+5) Discuss JSP page directive elements
+    to define attributes that apply to the entire JSP page
+    determine how the container should process the page, such as handling errors, import resources etc
+    Stores meta info of a webpage
+    eg - <% page language="java" contentType="text/html"%>
+        means java is added into this page
+        cause java gives dynamic context, without it page would be static
+    
+    enclosed between <%@ and %>
+    does not affect the visible content of the response but controls how the container handles the page
+
+    attributes- 
+        import - to import java classes or packages 
+            <%@ page import="java.util.*" %>
+        contentType - sets MIME type of response (text/html, text/xml)
+            contentType="text/html"
+        errorPage - defines url to another JSP page that will handle exceptions
+            errorPage="error.jsp"
+        session - specifies if JSP page requires HTTP session (default true)
+            session="false"
+        pageEncoding: Sets the character encoding for the JSP page, to hide context from user
+            pageEncoding=true
+
+6) Explain MVC architecture of JSP
+    design pattern that separates an application into three main logical components 
+    to improve maintainability and scalability.
+
+    Provides seperation of 
+        data & business logic (model)
+        data presentation (view)
+        data interaction (controller)
+
+    Diagram
+
+    Model (The Data & Logic):
+        Represents the data and the business logic of the application
+        manages interaction with db
+        handled by JavaBeans
+    View (The Presentation):
+        UI that displays the result of a request to the user
+        focuses only on how to display the data provided by Model
+        handled by JSP
+    Controller (The Interaction):
+        Acts as the interface between the View and the Model
+        user interacts with controller -> controller forwards req to model -> result of req displayed by view
+        in java, Servlet acts as controller
+
+
+    user req -> controller -> forward req to model to apply login(eg login) -> model interacts with db 
+    -> result sent to view -> view generates response -> response sent back to client
+
+
+-------------------------------------------------------------------------------------------
+
+Struts -
+    Open source java framework for creating web applications using MVC2 arch
+    Action Based Framework
+
+    Struts v2 - webwork + struts
+        implements MVC2 design pattern
+
+    Core Controller: 
+        Since Struts 2.1, the main controller is the StrutsPrepareAndExecuteFilter(SPEF bolenge for now) (previously FilterDispatcher)
+
+    browser requests - /mypage.action
+    FilterDispatcher or SPEF: entry point that intercepts every request and determines which Action to run
+    ActionMapper - maps request to correct action class
+    interceptors - automatically apply common tasks like validation, file upload, and parameter mapping before the action executes
+    Action method executes
+    Results render the output(JSP) back to browser
+
+    diagram (1st wala)
+
+    Request flow - 
+        Request: User sends a request for a specific resource (e.g., /mypage.action).
+        Mapping: The Container checks web.xml to map the request to the Struts Controller.
+        container invokes controller (FilterDispatcher or SPEF)
+        Controller & Mapper: that Controller asks the ActionMapper which Action class to use.
+        Proxy Creation: The Controller invokes the ActionProxy, which fetches action & interceptor details from struts.xml.
+        Invocation: ActionProxy forwards request to ActionInvocation, which triggers the Interceptors followed by the Action method.
+        Response: A Result is generated, is sent back to ActionInvocation, converted into an HttpServletResponse, and sent back to the user.
+
+
+Interceptors - 
+    Classes that implement the com.opensymphony.xwork2.interceptor.Interceptor interface 
+    to provide pre-processing and post-processing on Action invocations
+    Defined in the struts.xml file
+
+    params - Sets the request parameters directly onto the Action class.
+    validation - Validates data using an ActionName-validation.xml file or Annotations.
+    fileUpload - Automatically handles file uploads when the request contains multipart/form-data
+    exception - Catches exceptions and maps them to a specific result (error page)
+    logger - Logs the start and end of the execution of an action for tracking purposes
+    cookie - Reads specific cookies and values from the local system
+    prepare - Used for pre-processing an object in the Action before methods run
+    modelDriven - Creates a POJO(Plain Old Java Object) model class and maps request parameters to it, instead of the Action
+    execAndWait - Displays an intermediate "loading" page while the Action executes in the background
+    workflow - it doesn't perform validation, but checks for validation errors and controls the flow based on errors
