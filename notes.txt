@@ -794,3 +794,61 @@ Interceptors -
     modelDriven - Creates a POJO(Plain Old Java Object) model class and maps request parameters to it, instead of the Action
     execAndWait - Displays an intermediate "loading" page while the Action executes in the background
     workflow - it doesn't perform validation, but checks for validation errors and controls the flow based on errors
+
+
+-------------
+
+Eureka Discovery Server -
+Part of the Spring Cloud Netflix ecosystem
+Acts as a centralized service registry (like a phonebook) for microservices
+Uses a Client-Server architecture
+The Problem (Why we need it) - 
+    In a microservices architecture (eg - a streaming app like Streamix), services are dynamically scaled up or down
+    IP addresses and ports change dynamically upon deployment or failure
+    Hardcoding URLs of services (eg - UserBilling service trying to call MovieCatalog service) leads to broken connections and rigid architecture
+
+
+
+Components & Flow - 
+    1) Eureka Server (Service Registry)
+        Central Spring Boot application maintaining a registry of all active microservice instances
+        Stores the Application Name, IP address, port, and health status
+
+
+    2) Eureka Client (The Microservices)
+        Every individual microservice (MovieService, UserService, etc.) acts as a client
+        Upon startup, it registers its own IP and port with the Eureka Server
+
+
+    3) Heartbeats (Renewal)
+        Clients send periodic pings to the Server (default every 30 seconds) to prove they are alive
+        If the Server stops receiving heartbeats from an instance, it evicts that instance from the registry (typically after 90 seconds)
+
+
+    4) Service Discovery & Routing
+        When Service A needs to communicate with Service B, it queries the Eureka Server using Service B's application name
+        Eureka Server returns the live IP/Port of Service B
+        Service A then makes the direct HTTP call (enabling client-side load balancing)
+
+--
+
+Implementation (Spring Boot & Java 21) - 
+    Eureka Server Configuration:
+        Add `@EnableEurekaServer` annotation on the main Spring Boot application class
+        properties:
+            `server.port=8761` (default Eureka port)
+            `eureka.client.register-with-eureka=false` (tells the server not to register itself as a client)
+            `eureka.client.fetch-registry=false`
+    Eureka Client Configuration:
+        Add `@EnableDiscoveryClient` on the microservice's main class
+        properties:
+            `spring.application.name=movie-catalog-service` (The name used by other services to find it)
+            `eureka.client.serviceUrl.defaultZone=http://localhost:8761/eureka/` (Points the client to the registry)
+
+adv - 
+    Decouples service providers from consumers
+    Highly available (multiple Eureka servers can sync with each other)
+    Seamless horizontal scaling of microservices without manual configuration changes
+    Provides out-of-the-box integration with API Gateways and Load Balancers
+
+
