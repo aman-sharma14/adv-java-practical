@@ -700,13 +700,13 @@ JSP Life Cycle
     to define attributes that apply to the entire JSP page
     determine how the container should process the page, such as handling errors, import resources etc
     Stores meta info of a webpage
-    eg - <% page language="java" contentType="text/html"%>
+    eg - <%@ page language="java" contentType="text/html"%>
         means java is added into this page
         cause java gives dynamic context, without it page would be static
     
     enclosed between <%@ and %>
     does not affect the visible content of the response but controls how the container handles the page
-
+ 
     attributes- 
         import - to import java classes or packages 
             <%@ page import="java.util.*" %>
@@ -716,8 +716,8 @@ JSP Life Cycle
             errorPage="error.jsp"
         session - specifies if JSP page requires HTTP session (default true)
             session="false"
-        pageEncoding: Sets the character encoding for the JSP page, to hide context from user
-            pageEncoding=true
+        pageEncoding: Sets the character encoding for the JSP page
+            pageEncoding="UTF-8"
 
 6) Explain MVC architecture of JSP
     design pattern that separates an application into three main logical components 
